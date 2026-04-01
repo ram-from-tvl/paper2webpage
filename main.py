@@ -20,7 +20,7 @@ app = FastAPI()
 
 # Initialize Gemini Client
 def get_gemini_client():
-    api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyBdrB-uoY5iiRNpoGo2BvcuNo-qVbrQp5w")
+    api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY not found in environment")
     return genai.Client(api_key=api_key)
