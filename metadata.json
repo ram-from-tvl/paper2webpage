@@ -1,0 +1,5 @@
+{
+  "name": "Paper2Web Deployer",
+  "description": "Convert research paper PDFs into beautiful landing pages and deploy them to GitHub using Gemini AI.",
+  "requestFramePermissions": []
+}
