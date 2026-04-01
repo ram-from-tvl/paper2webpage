@@ -12,11 +12,15 @@ from github import Github
 from google import genai
 from pydantic import BaseModel
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = FastAPI()
 
 # Initialize Gemini Client
 def get_gemini_client():
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyBdrB-uoY5iiRNpoGo2BvcuNo-qVbrQp5w")
     if not api_key:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY not found in environment")
     return genai.Client(api_key=api_key)
@@ -54,7 +58,7 @@ async def process_pdf(file: UploadFile = File(...)):
                         links.append(uri)
             
             # Extract images
-            image_list = page.get_images(full_res=True)
+            image_list = page.get_images()
             for img_index, img in enumerate(image_list):
                 xref = img[0]
                 base_image = doc.extract_image(xref)
@@ -90,12 +94,15 @@ async def generate_webpage(data: dict):
         prompt = f"""
         You are an expert web developer and designer. I am providing you with the text, important URLs, and extracted image filenames from a research paper. 
         Your job is to generate a single, beautiful index.html file using Tailwind CSS via CDN. 
-        This page will act as the project's official landing page. 
-        It must include: 
-        1. A hero section with the paper title and authors.
-        2. An 'About the Project' summary.
-        3. A section highlighting the crucial links (Code, Datasets) with nice buttons.
-        4. Placeholders for the images using the exact filenames provided: {', '.join(image_filenames)}.
+        This page will act as the project's official landing page and must look EXTREMELY PREMIUM, modern, and visually stunning.
+        
+        Requirements for the Design:
+        1. A breathtaking hero section with the paper title, authors, and a beautiful subtle gradient background or glassmorphism effect.
+        2. Modern typography (e.g., pulling Inter or Roboto from Google Fonts).
+        3. An 'About the Project' summary beautifully laid out with plenty of whitespace.
+        4. Smooth micro-animations (e.g., hover effects on buttons and cards using Tailwind).
+        5. A section highlighting the crucial links (Code, Datasets) with highly polished, modern buttons.
+        6. Placeholders for the images using the exact filenames provided: {', '.join(image_filenames)}. Lay them out in a responsive grid or beautiful showcase format.
         
         Research Paper Text Snippet:
         {text[:5000]}
@@ -107,7 +114,7 @@ async def generate_webpage(data: dict):
         """
         
         response = client.models.generate_content(
-            model="gemini-2.5-flash-preview",
+            model="gemini-2.5-flash",
             contents=prompt
         )
         
